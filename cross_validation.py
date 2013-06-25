@@ -34,10 +34,11 @@ acc=0.0
 print 'tp\tfn\ttn\tfp'
 for i in range(0,fold):
 	x_train,x_test,y_train,y_test=cross_validation.train_test_split(train,test,test_size=1.0/float(fold))
-	if classifier=='svm':
-		model=LinearSVC().fit(x_train,y_train)
-	elif classifier=='rf':
+	if classifier=='rf':
 		model=RandomForestClassifier().fit(x_train,y_train)
+	else:
+		model=LinearSVC().fit(x_train,y_train)
+	
 	p_test=model.predict(x_test)
 	tp=0
 	tn=0
