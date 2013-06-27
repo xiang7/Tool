@@ -1,3 +1,4 @@
+#Author: Luojie Xiang
 #performs a random sample from a file
 import argparse
 import sys
