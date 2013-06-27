@@ -8,7 +8,7 @@ from sklearn.metrics import f1_score
 from sklearn import metrics
 import argparse
 
-parser=argparse.ArgumentParser(description='Cross validation on a preprocessed dataset (for binary classification). Input format: csv, each line a data sample, the first column is the label and the rest are numerical values for each feature.')
+parser=argparse.ArgumentParser(description='Cross validation on a preprocessed dataset (for binary classification). Input format: csv, each line a data sample, the first column is the label and the rest are numerical values for each feature. Classifier can be chosen: random forest or svm')
 parser.add_argument('-i',help='input csv file',required=True)
 parser.add_argument('-pos',type=int,help='positive label (int)',required=True)
 parser.add_argument('-neg',type=int,help='negative label (int)',required=True)
