@@ -43,7 +43,10 @@ for i in range(0,fold):
 	if classifier=='rf':
 		model=RandomForestClassifier().fit(x_train,y_train)
 	else:
-		model=LinearSVC(class_weight={pos:args.pcw,neg:args.ncw}).fit(x_train,y_train)
+		if args.pcw:
+			model=LinearSVC(class_weight={pos:args.pcw,neg:args.ncw}).fit(x_train,y_train)
+		else:
+			model=LinearSVC().fit(x_train,y_train)
 	
 	p_test=model.predict(x_test)
 	tp=0
