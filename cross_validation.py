@@ -14,6 +14,8 @@ parser.add_argument('-pos',type=int,help='positive label (int)',required=True)
 parser.add_argument('-neg',type=int,help='negative label (int)',required=True)
 parser.add_argument('-fold',type=int,help='number of folds, default 10')
 parser.add_argument('-c',help='classifier type, default svm or rf (RandomForestClassifier)')
+parser.add_argument('-pcw','--positive_class_weight',type=float,help="positive class weight for svm")
+parser.add_argument('-ncw','--negative_class_weight',type=float,help="negative class weight for svm")
 
 args,unknown = parser.parse_known_args(sys.argv)
 pos=args.pos
@@ -24,6 +26,9 @@ if args.fold:
 classifier='svm'
 if args.c:
 	classifier=args.classifier.lower().strip()
+if args.pcw and not args.ncw or args.ncw and not args.pcw:
+	print "positive and negative class weight need to be specified at the same time"
+	sys.exit(0)
 
 train=numpy.matrix(';'.join(open(args.i).read().splitlines()))
 [M,N]=train.shape
@@ -38,7 +43,7 @@ for i in range(0,fold):
 	if classifier=='rf':
 		model=RandomForestClassifier().fit(x_train,y_train)
 	else:
-		model=LinearSVC().fit(x_train,y_train)
+		model=LinearSVC(class_weight={pos:args.pcw,neg:args.ncw}).fit(x_train,y_train)
 	
 	p_test=model.predict(x_test)
 	tp=0
