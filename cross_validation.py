@@ -14,8 +14,8 @@ parser.add_argument('-pos',type=int,help='positive label (int)',required=True)
 parser.add_argument('-neg',type=int,help='negative label (int)',required=True)
 parser.add_argument('-fold',type=int,help='number of folds, default 10')
 parser.add_argument('-c',help='classifier type, default svm or rf (RandomForestClassifier)')
-parser.add_argument('-pcw','--positive_class_weight',type=float,help="positive class weight for svm")
-parser.add_argument('-ncw','--negative_class_weight',type=float,help="negative class weight for svm")
+parser.add_argument('-pcw',type=float,help="positive class weight for svm")
+parser.add_argument('-ncw',type=float,help="negative class weight for svm")
 
 args,unknown = parser.parse_known_args(sys.argv)
 pos=args.pos
