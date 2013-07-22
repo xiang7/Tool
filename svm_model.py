@@ -23,6 +23,7 @@ train=numpy.matrix(';'.join(open(args.i).read().strip().splitlines()))
 [M,N]=train.shape
 test=numpy.asarray(train[:,0]).reshape(-1)
 train=train[:,1:N]
+print args.pcw, args.ncw, args.pos, args.neg
 if (args.pcw!=None or args.ncw!=None) and (args.pcw==None or args.ncw==None or args.pos==None or args.neg==None):
 	print "if want to use class weight, pcw ncw pos neg parameters should all be specified"
 	sys.exit(0)
@@ -87,3 +88,5 @@ if args.cf:
 		f1=2*pre*rec/(pre+rec)
 	print 'precision\trecall\taccuracy\tf1-score'
 	print str(pre)+'\t'+str(rec)+'\t'+str(acc)+'\t'+str(f1)
+	print 'tp\tfp\ttn\tfn'
+	print str(tp)+'\t'+str(fp)+'\t'+str(tn)+'\t'+str(fn)
