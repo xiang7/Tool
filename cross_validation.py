@@ -7,6 +7,7 @@ from sklearn.svm import *
 from sklearn.metrics import f1_score
 from sklearn import metrics
 import argparse
+from scipy.sparse import *
 
 parser=argparse.ArgumentParser(description='Cross validation on a preprocessed dataset (for binary classification). Input format: csv, each line a data sample, the first column is the label and the rest are numerical values for each feature. Classifier can be chosen: random forest or svm')
 parser.add_argument('-i',help='input csv file',required=True)
@@ -16,6 +17,7 @@ parser.add_argument('-fold',type=int,help='number of folds, default 10')
 parser.add_argument('-c',help='classifier type, default svm or rf (RandomForestClassifier)')
 parser.add_argument('-pcw',type=float,help="positive class weight for svm")
 parser.add_argument('-ncw',type=float,help="negative class weight for svm")
+parser.add_argument('-s',help='sparse input, if the data set is sparse, use this option and will make svm much faster',action='store_true')
 
 args,unknown = parser.parse_known_args(sys.argv)
 pos=args.pos
@@ -30,10 +32,36 @@ if args.pcw and not args.ncw or args.ncw and not args.pcw:
 	print "positive and negative class weight need to be specified at the same time"
 	sys.exit(0)
 
-train=numpy.matrix(';'.join(open(args.i).read().splitlines()))
-[M,N]=train.shape
-test=train[:,0]
-train=train[:,1:N]
+if not args.s:
+	print "non-sparse input"
+	train=numpy.matrix(';'.join(open(args.i).read().splitlines()))
+	[M,N]=train.shape
+	test=train[:,0]
+	train=train[:,1:N]
+if args.s: #sparse input
+	print "sparse input"
+	col=[]
+        row=[]
+        data=[]
+	test=[]
+        row_count=0
+	f=open(args.i,'r')
+        for line in f:
+                s=line.split(',')
+		test.append(float(s[0]))
+                for i in range(1,len(s)):
+                        if float(s[i])!=0:
+                                col.append(i-1)
+                                row.append(row_count)
+                                data.append(float(s[i]))
+		row_count+=1
+	col_count=len(s)
+	train=coo_matrix((data,(row,col)),shape=(row_count,col_count))
+
+
+if classifier=='rf' and args.s:
+	train=train.todense() #RF only takes dense matrix as input
+
 pre=0.0
 rec=0.0
 acc=0.0
