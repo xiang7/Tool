@@ -18,6 +18,7 @@ parser.add_argument('-c',help='classifier type, default svm or rf (RandomForestC
 parser.add_argument('-pcw',type=float,help="positive class weight for svm")
 parser.add_argument('-ncw',type=float,help="negative class weight for svm")
 parser.add_argument('-s',help='sparse input, if the data set is sparse, use this option and will make svm much faster',action='store_true')
+parser.add_argument('-libsvm',help='sparse input in libsvm format',action='store_true')
 
 args,unknown = parser.parse_known_args(sys.argv)
 pos=args.pos
@@ -32,7 +33,7 @@ if args.pcw and not args.ncw or args.ncw and not args.pcw:
 	print "positive and negative class weight need to be specified at the same time"
 	sys.exit(0)
 
-if not args.s:
+if not (args.s or args.libsvm):
 	print "non-sparse input"
 	train=numpy.matrix(';'.join(open(args.i).read().splitlines()))
 	[M,N]=train.shape
@@ -57,7 +58,26 @@ if args.s: #sparse input
 		row_count+=1
 	col_count=len(s)
 	train=coo_matrix((data,(row,col)),shape=(row_count,col_count))
+if args.libsvm: #sparse input
+	print "libsvm input"
+	col=[]
+        row=[]
+        data=[]
+	test=[]
+        row_count=0
+	f=open(args.i,'r')
+        for line in f:
+                s=line.split(' ')
+		test.append(float(s[0]))
+                for i in range(1,len(s)):
+			ss=s[i].split(':')
+                	col.append(int(ss[0]))
+	                row.append(row_count)
+        	        data.append(float(ss[1]))
+		row_count+=1
+	train=coo_matrix((data,(row,col)))
 
+print train.shape
 
 if classifier=='rf' and args.s:
 	train=train.todense() #RF only takes dense matrix as input
